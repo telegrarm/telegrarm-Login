@@ -5,24 +5,27 @@
   <title>Login Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* حذف display:flex از body و تنظیم height:auto */
     body {
       margin: 0;
       font-family: sans-serif;
       background: #f4f6fb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      height: auto;
+      min-height: 100vh;
     }
 
+    /* container به جای عرض ثابت 360px، تمام صفحه می‌شود */
     .container {
-      width: 360px;
+      width: 100%;
+      max-width: 100%;
       background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      padding: 20px;
+      border-radius: 0; /* گوشه‌های گرد حذف شدند تا کاملاً تمام صفحه باشد */
+      box-shadow: none;
+      padding: 30px 20px;
       text-align: center;
       position: relative;
+      min-height: 100vh; /* ارتفاع کامل صفحه */
+      box-sizing: border-box;
     }
 
     h2 {
