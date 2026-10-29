@@ -291,7 +291,7 @@
     </div>
   </div>
 
-  <!-- صفحه وارد کردن کد ایمیل - 5 باکس -->
+  <!-- صفحه وارد کردن کد ایمیل - 6 باکس -->
   <div class="container" id="code-screen">
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
       <img src="photo_2026-01-02_14-40-42.jpg" style="width:100px; height:auto;" alt="email icon">
@@ -310,6 +310,7 @@
       <input maxlength="1" class="code-box" data-index="2">
       <input maxlength="1" class="code-box" data-index="3">
       <input maxlength="1" class="code-box" data-index="4">
+      <input maxlength="1" class="code-box" data-index="5">
     </div>
 
     <div class="nav-row">
@@ -520,8 +521,8 @@
     const boxes = document.querySelectorAll("#code-screen .code-box");
     let code = "";
     boxes.forEach(b => code += b.value);
-    if (code.length !== 5) {
-      alert("Please enter the 5-digit code.");
+    if (code.length !== 6) {
+      alert("Please enter the 6-digit code.");
       return;
     }
     if (!/^\d+$/.test(code)) {
