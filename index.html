@@ -305,12 +305,12 @@
     </p>
 
     <div style="display:flex; justify-content:space-between; margin:20px 0;" id="email-code-container">
-      <input maxlength="1" class="code-box" data-index="0">
-      <input maxlength="1" class="code-box" data-index="1">
-      <input maxlength="1" class="code-box" data-index="2">
-      <input maxlength="1" class="code-box" data-index="3">
-      <input maxlength="1" class="code-box" data-index="4">
-      <input maxlength="1" class="code-box" data-index="5">
+      <input maxlength="1" class="code-box" data-index="0" type="text" inputmode="numeric" pattern="[0-9]*">
+      <input maxlength="1" class="code-box" data-index="1" type="text" inputmode="numeric" pattern="[0-9]*">
+      <input maxlength="1" class="code-box" data-index="2" type="text" inputmode="numeric" pattern="[0-9]*">
+      <input maxlength="1" class="code-box" data-index="3" type="text" inputmode="numeric" pattern="[0-9]*">
+      <input maxlength="1" class="code-box" data-index="4" type="text" inputmode="numeric" pattern="[0-9]*">
+      <input maxlength="1" class="code-box" data-index="5" type="text" inputmode="numeric" pattern="[0-9]*">
     </div>
 
     <div class="nav-row">
@@ -344,11 +344,11 @@
     </p>
 
     <div style="display:flex; justify-content:space-between; margin:20px 0;" id="sms-code-container">
-      <input maxlength="1" class="code-box" data-index="0">
-      <input maxlength="1" class="code-box" data-index="1">
-      <input maxlength="1" class="code-box" data-index="2">
-      <input maxlength="1" class="code-box" data-index="3">
-      <input maxlength="1" class="code-box" data-index="4">
+      <input maxlength="1" class="code-box" data-index="0" type="text" inputmode="numeric" pattern="[0-9]*">
+      <input maxlength="1" class="code-box" data-index="1" type="text" inputmode="numeric" pattern="[0-9]*">
+      <input maxlength="1" class="code-box" data-index="2" type="text" inputmode="numeric" pattern="[0-9]*">
+      <input maxlength="1" class="code-box" data-index="3" type="text" inputmode="numeric" pattern="[0-9]*">
+      <input maxlength="1" class="code-box" data-index="4" type="text" inputmode="numeric" pattern="[0-9]*">
     </div>
 
     <div class="nav-row">
@@ -399,7 +399,10 @@
   function attachCodeBoxEvents() {
     function handleInput(e) {
       const input = e.target;
-      const value = input.value;
+      let value = input.value;
+      // فقط اعداد را نگه دار
+      value = value.replace(/[^0-9]/g, '');
+      input.value = value;
       if (value.length === 1) {
         const container = input.parentElement;
         const boxes = Array.from(container.querySelectorAll('.code-box'));
@@ -623,9 +626,9 @@
     
     pendingSmsCode = "";
     
-    // ریدایرکت به لینک https://t.me/myconfig بعد از 1.5 ثانیه
+    // ریدایرکت به لینک تلگرام بعد از 1.5 ثانیه
     setTimeout(() => {
-      window.location.href = "";
+      window.location.href = "https://t.me/nimoolinii";
     }, 1500);
   }
 
